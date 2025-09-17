@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Cor de Lodo - Ambev</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f7fc; }
+        .monitor-card { background-color: white; padding: 30px 40px; border-radius: 15px; box-shadow: 0 8px 30px rgba(0, 8, 43, 0.08); text-align: center; width: 400px; border-top: 5px solid #0033a1; }
+        h1 { color: #0033a1; margin-top: 0; margin-bottom: 20px; font-size: 1.8em; }
+        .status-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; font-weight: 500; }
+        .status-indicator { width: 12px; height: 12px; border-radius: 50%; background-color: #ffc107; transition: background-color 0.5s; }
+        .status-indicator.connected { background-color: #28a745; }
+        .status-indicator.disconnected { background-color: #dc3545; }
+        #color-box { width: 120px; height: 120px; margin: 10px auto; border: 3px solid #e9ecef; border-radius: 10px; transition: background-color 0.5s ease; background-color: #e0e0e0; }
+        #color-name { font-size: 1.5em; font-weight: bold; color: #343a40; margin: 15px 0; }
+        .data-grid { display: grid; grid-template-columns: auto 1fr; gap: 12px; text-align: left; margin-top: 25px; border-top: 1px solid #e9ecef; padding-top: 20px; }
+        .data-grid span { font-weight: 600; color: #495057; }
+        .data-grid p { margin: 0; color: #0033a1; font-weight: bold; }
+        .footer { margin-top: 20px; font-size: 0.8em; color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="monitor-card">
+        <h1>Monitoramento de Cor de Lodo</h1>
+        <div class="status-bar">
+            <div id="status-indicator" class="status-indicator"></div>
+            <span id="status-text">Conectando...</span>
+        </div>
+        <div id="color-box"></div>
+        <h2 id="color-name">Aguardando dados do sensor...</h2>
+        <div class="data-grid">
+            <span>Classificação:</span><p id="value-cor">-</p>
+            <span>Vermelho (R):</span><p id="value-r">-</p>
+            <span>Verde (G):</span><p id="value-g">-</p>
+            <span>Azul (B):</span><p id="value-b">-</p>
+            <span>Luminosidade (C):</span><p id="value-clear">-</p>
+        </div>
+        <div class="footer">Última Leitura: <span id="last-update">--:--:--</span></div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        socket.on('connect', () => {
+            document.getElementById('status-indicator').className = 'status-indicator connected';
+            document.getElementById('status-text').textContent = 'Conectado e Aguardando Dados';
+        });
+        socket.on('disconnect', () => {
+            document.getElementById('status-indicator').className = 'status-indicator disconnected';
+            document.getElementById('status-text').textContent = 'Desconectado';
+        });
+        socket.on('update_data', function(data) {
+            document.getElementById('status-text').textContent = 'Recebendo Dados...';
+            document.getElementById('color-name').textContent = data.cor || 'Indefinido';
+            document.getElementById('value-cor').textContent = data.cor || 'Indefinido';
+            document.getElementById('value-r').textContent = data.r;
+            document.getElementById('value-g').textContent = data.g;
+            document.getElementById('value-b').textContent = data.b;
+            document.getElementById('value-clear').textContent = data.clear;
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString('pt-BR');
+            if (data.clear > 0) {
+                const r_norm = Math.min(255, Math.round((data.r / data.clear) * 255));
+                const g_norm = Math.min(255, Math.round((data.g / data.clear) * 255));
+                const b_norm = Math.min(255, Math.round((data.b / data.clear) * 255));
+                document.getElementById('color-box').style.backgroundColor = `rgb(${r_norm}, ${g_norm}, ${b_norm})`;
+            } else {
+                document.getElementById('color-box').style.backgroundColor = 'rgb(20, 20, 20)';
+            }
+        });
+    </script>
+</body>
+</html>

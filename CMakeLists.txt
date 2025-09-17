@@ -41,14 +41,17 @@ pico_set_program_name(Ambev_lodo "Ambev_lodo")
 pico_set_program_version(Ambev_lodo "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(Ambev_lodo 0)
+pico_enable_stdio_uart(Ambev_lodo 1)
 pico_enable_stdio_usb(Ambev_lodo 1)
+
 
 # Add the standard library to the build
 target_link_libraries(Ambev_lodo
-        pico_stdlib
-         hardware_i2c
-         hardware_gpio)
+         pico_stdlib
+    pico_cyw43_arch
+    hardware_i2c
+    pico_lwip_http_client
+    )
 
 # Add the standard include files to the build
 target_include_directories(Ambev_lodo PRIVATE
