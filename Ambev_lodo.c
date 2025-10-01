@@ -6,9 +6,9 @@
 #include "lwip/apps/http_client.h"
 
 // ==================== CONFIGURE AQUI ====================
-#define WIFI_SSID "CASA24"            // << COLOQUE O NOME DA SUA REDE
-#define WIFI_PASSWORD "290508An01" // << COLOQUE A SENHA DA SUA REDE
-#define SERVER_URL "http://192.168.0.112" // << VERIFIQUE SE ESTE IP ESTÁ CORRETO
+#define WIFI_SSID "nome_da_sua_rede"            // << COLOQUE O NOME DA SUA REDE
+#define WIFI_PASSWORD "sua sennha" // << COLOQUE A SENHA DA SUA REDE
+#define SERVER_URL "http://192.168.x.xxx" // << VERIFIQUE SE ESTE IP ESTÁ CORRETO
 
 // ==================== CONFIGURAÇÕES DO SENSOR ====================
 #define I2C_PORT i2c1
